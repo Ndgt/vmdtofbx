@@ -53,7 +53,6 @@ else:
                 Rotation=vmdread(file, 16, "4f"),
                 Interpolation=vmdread(file, 64, "64B")
             )
-            '''
             print(
                 vmd_motion.BoneName, " ",
                 vmd_motion.FrameNo, "\n",
@@ -65,7 +64,6 @@ else:
                 vmd_motion.Rotation[2], "\n",
                 vmd_motion.Interpolation,
             )
-            '''
         print("\n")
 
         # Facial Animation Data Count
