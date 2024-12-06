@@ -1,31 +1,5 @@
+from vmd import*
 import os
-from io import BufferedReader 
-from struct import unpack
-from collections import namedtuple
-
-# function to decode bytes
-def vmdread(file: BufferedReader, count: int, fmt: str):
-    data_bytes = file.read(count)
-    data = unpack(fmt, data_bytes)
-    if len(data) == 1:
-        if type(data[0]) == bytes:
-            return data[0].decode("shift-jis", errors="ignore") # str
-        else:
-            return data[0] # int 
-    else:
-        return data # tuple
-
-# VMD formats
-VMD_HEADER       = namedtuple("VMD_HEADER",       
-                                ["VmdHeader", "VmdModelName"])
-VMD_MOTION_COUNT = namedtuple("VMD_MOTION_COUNT", 
-                                ["Count"])
-VMD_MOTION       = namedtuple("VMD_MOTION",
-                                ["BoneName", "FrameNo", "Location", "Rotation", "Interpolation"])
-VMD_SKIN_COUNT   = namedtuple("VMD_SKIN_COUNT",
-                                ["Count"])
-VMD_SKIN         = namedtuple("VMD_SKIN",
-                                ["SkinName", "FrameNo", "Weight"])
 
 # Read the VMD
 fpath = "test.vmd"
@@ -34,9 +8,10 @@ if not os.path.exists(fpath):
 else:
     with open(fpath, "rb") as file:
         # Header
-        header = vmdread(file, 30, "30s")
-        model_name = vmdread(file, 20, "20s")
-        vmd_header = VMD_HEADER(VmdHeader=header, VmdModelName=model_name)
+        vmd_header = VMD_HEADER(
+            VmdHeader=vmdread(file, 30, "30s"),
+            VmdModelName=vmdread(file, 20, "20s")
+            )
         print(vmd_header.VmdHeader)
         print("Model : ", vmd_header.VmdModelName)
 
@@ -53,6 +28,7 @@ else:
                 Rotation=vmdread(file, 16, "4f"),
                 Interpolation=vmdread(file, 64, "64B")
             )
+
             print(
                 vmd_motion.BoneName, " ",
                 vmd_motion.FrameNo, "\n",
@@ -62,8 +38,9 @@ else:
                 vmd_motion.Rotation[0], " ",
                 vmd_motion.Rotation[1], " ",
                 vmd_motion.Rotation[2], "\n",
-                vmd_motion.Interpolation,
+                # vmd_motion.Interpolation,
             )
+
         print("\n")
 
         # Facial Animation Data Count
@@ -77,6 +54,7 @@ else:
                 FrameNo=vmdread(file, 4, "I"),
                 Weight=vmdread(file, 4, "f")
             )
+
             print(
                 vmd_skin.SkinName, " ",
                 vmd_skin.FrameNo, " ",
